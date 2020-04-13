@@ -1,0 +1,211 @@
+SQL> create table stu_perf (eno number(6) primary key, name varchar(10), sub1 number(2), sub2 number(3), grade char(1) ch
+eck (grade in ('p','f','P','F')));
+create table stu_perf (eno number(6) primary key, name varchar(10), sub1 number(2), sub2 number(3), grade char(1) check (
+             *
+ERROR at line 1:
+ORA-00955: name is already used by an existing object
+
+
+SQL> create table stu_perf070(eno number(6) primary key, name varchar(10), sub1 number(2), sub2 number(3), grade char(1) 
+check (grade in ('p','f','P','F')));
+
+Table created.
+
+SQL> insert into stu_perf070 values (123456,'ashish',67,56,'p');
+
+1 row created.
+
+SQL> insert into stu_perf070 values (123457,'ashish',67,56,'p');
+
+1 row created.
+
+SQL> 
+SQL> insert into stu_perf values070 (123458,'amesh',89,76,'p');
+insert into stu_perf values070 (123458,'amesh',89,76,'p')
+                                *
+ERROR at line 1:
+ORA-00928: missing SELECT keyword
+
+
+SQL> insert into stu_perf070 values070 (123458,'amesh',89,76,'p');\
+  2  
+SQL> insert into stu_perf070 values070 (123458,'amesh',89,76,'p');
+insert into stu_perf070 values070 (123458,'amesh',89,76,'p')
+                                   *
+ERROR at line 1:
+ORA-00928: missing SELECT keyword
+
+
+SQL> insert into stu_perf070 values (123458,'amesh',89,76,'p');
+
+1 row created.
+
+SQL> insert into stu_perf070 values (123459,'ajay',78,45,'P');
+
+1 row created.
+
+SQL> insert into stu_perf070 values (123460,'taral',23,32,'F');
+
+1 row created.
+
+SQL> insert into stu_perf070 values (123461,'tripur',12,24,'P');
+
+1 row created.
+
+SQL> insert into stu_perf070 values (123462,'rohan',76,65,'p');
+
+1 row created.
+
+SQL> insert into stu_perf070 values (123463,'ritul',33,32,'f');
+
+1 row created.
+
+SQL> insert into stu_perf070 values (123468,'ritul',33,32,'q');
+insert into stu_perf070 values (123468,'ritul',33,32,'q')
+*
+ERROR at line 1:
+ORA-02290: check constraint (SCOTT.SYS_C005248) violated
+
+
+SQL> insert into stu_perf070 values (123468,'ritul',33,32,'p');
+
+1 row created.
+
+SQL> select * from stu_perf070;
+
+       ENO NAME             SUB1       SUB2 G
+---------- ---------- ---------- ---------- -
+    123456 ashish             67         56 p
+    123457 ashish             67         56 p
+    123458 amesh              89         76 p
+    123459 ajay               78         45 P
+    123460 taral              23         32 F
+    123461 tripur             12         24 P
+    123462 rohan              76         65 p
+    123463 ritul              33         32 f
+    123468 ritul              33         32 p
+
+9 rows selected.
+
+SQL> create table log_stu_perf070 (eno number(6), name varchar(10), sub1 number(2), sub2 number(3), grade char(1), operat
+ion varchar(25), userid varchar(20), odate date);
+
+Table created.
+
+SQL> CREATE OR REPLACE TRIGGER log_stud070 
+  2   AFTER UPDATE OR DELETE ON stu_perf070 
+  3    FOR EACH ROW 
+  4  DECLARE 
+  5   oper varchar(8);
+  6  BEGIN
+  7   IF updating THEN 
+  8    oper:='UPDATE';
+  9   END IF;
+ 10   IF deleting THEN 
+ 11    oper:= 'DELETE';
+ 12   END IF;
+ 13   insert into log_stu_perf070 values(:OLD.eno,:OLD.name,:OLD.sub1,:OLD.sub2,:OLD.grade,oper,USER,sysdate);
+ 14  END;
+ 15  
+ 16  
+ 17  
+ 18  
+ 19  
+ 20  CREATE OR REPLACE TRIGGER log_stud070 
+ 21   AFTER UPDATE OR DELETE ON stu_perf070 
+ 22    FOR EACH ROW 
+ 23  DECLARE 
+ 24   oper varchar(8);
+ 25  BEGIN
+ 26   IF updating THEN 
+ 27    oper:='UPDATE';
+ 28   END IF;
+ 29   IF deleting THEN 
+ 30    oper:= 'DELETE';
+ 31   END IF;
+ 32   insert into log_stu_perf070 values(:OLD.eno,:OLD.name,:OLD.sub1,:OLD.sub2,:OLD.grade,oper,USER,sysdate);
+ 33  END;
+ 34  /
+
+Warning: Trigger created with compilation errors.
+
+SQL>  SELECT * FROM LOG_STU_PERF070;
+
+no rows selected
+
+SQL> UPDATE STU_PERF070 SET GRADE='P' WHERE ENO=123460;
+UPDATE STU_PERF070 SET GRADE='P' WHERE ENO=123460
+       *
+ERROR at line 1:
+ORA-04098: trigger 'SCOTT.LOG_STUD070' is invalid and failed re-validation
+
+
+SQL> 
+SQL> CREATE OR REPLACE TRIGGER log_stud 
+  2   AFTER UPDATE OR DELETE ON stu_perf 
+  3    FOR EACH ROW 
+  4  DECLARE 
+  5   oper varchar(8);
+  6  BEGIN
+  7   IF updating THEN 
+  8    oper:='UPDATE';
+  9   END IF;
+ 10   IF deleting THEN 
+ 11    oper:= 'DELETE';
+ 12   END IF;
+ 13   insert into log_stu_perf values(:OLD.eno,:OLD.name,:OLD.sub1,:OLD.sub2,:OLD.grade,oper,USER,sysdate);
+ 14  END;
+ 15  /
+
+Trigger created.
+
+SQL> SELECT * FROM LOG_STU_PERF;
+
+       ENO NAME             SUB1       SUB2 G OPERATION
+---------- ---------- ---------- ---------- - -------------------------
+USERID               ODATE
+-------------------- ---------
+    123460 taral              23         32 F UPDATE
+SCOTT                19-NOV-19
+
+    123468 ritul              33         32 P UPDATE
+SCOTT                19-NOV-19
+
+
+SQL> UPDATE STU_PERF SET GRADE='P' WHERE ENO=123460;
+
+1 row updated.
+
+SQL> SELECT * FROM STU_PERF;
+
+       ENO NAME             SUB1       SUB2 G
+---------- ---------- ---------- ---------- -
+    123456 ashish             67         56 p
+    123457 ashish             67         56 p
+    123458 amesh              89         76 p
+    123459 ajay               78         45 P
+    123460 taral              23         32 P
+    123461 tripur             12         24 P
+    123462 rohan              76         65 p
+    123463 ritul              33         32 f
+    123468 ritul              33         32 f
+
+9 rows selected.
+
+SQL> SELECT * FROM LOG_STU_PERF;
+
+       ENO NAME             SUB1       SUB2 G OPERATION
+---------- ---------- ---------- ---------- - -------------------------
+USERID               ODATE
+-------------------- ---------
+    123460 taral              23         32 F UPDATE
+SCOTT                19-NOV-19
+
+    123468 ritul              33         32 P UPDATE
+SCOTT                19-NOV-19
+
+    123460 taral              23         32 P UPDATE
+SCOTT                20-NOV-19
+
+
+SQL> 
